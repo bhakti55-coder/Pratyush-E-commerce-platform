@@ -1,2 +1,2 @@
-# Auto detect text files and perform LF normalization
+django-admin startproject ecommerce_config .# Auto detect text files and perform LF normalization
 * text=auto

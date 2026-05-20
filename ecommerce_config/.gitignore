@@ -1,0 +1,17 @@
+# Django core ignores
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# Virtual Environment folder
+venv/
+ENV/
+env/
+
+# System specific files
+.DS_Store
+Thumbs.db
