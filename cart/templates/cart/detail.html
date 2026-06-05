@@ -1,0 +1,125 @@
+{% extends "shop/base.html" %}
+
+{% block title %}Your Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4 fw-bold text-dark">Shopping Cart Summary</h1>
+    
+    {% if cart %}
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-align-middle mb-0 align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col" class="ps-4 py-3">Product</th>
+                                    <th scope="col" class="py-3">Quantity</th>
+                                    <th scope="col" class="py-3">Remove</th>
+                                    <th scope="col" class="pe-4 py-3 text-end">Price Totals</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart %}
+                                    {% with product=item.product %}
+                                        <tr>
+                                            <td class="ps-4 py-3">
+                                                <div class="d-flex align-items-center">
+                                                    {% if product.image %}
+                                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                    {% endif %}
+                                                    <div>
+                                                        <h6 class="fw-bold text-dark mb-0">{{ product.name }}</h6>
+                                                        <span class="badge bg-light text-dark border my-1">🎨 {{ item.color|default:"Default Base Color" }}</span><br>
+                                                        <small class="text-muted">Unit Cost: ₹{{ item.price }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            
+                                            <td class="py-3">
+                                                <form action="{% url 'cart:cart_add' product.id %}" method="post" class="d-flex align-items-center">
+                                                    {% csrf_token %}
+                                                    <div style="max-width: 80px;">
+                                                        {{ item.update_quantity_form.quantity }}
+                                                    </div>
+                                                    {{ item.update_quantity_form.override }}
+                                                    
+                                                    <input type="hidden" name="color" value="{{ item.color|default:'Default Base Color' }}">
+                                                    
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary ms-2 py-1 px-2" style="font-size: 0.75rem;">Update</button>
+                                                </form>
+                                            </td>
+                                            
+                                            <td class="py-3">
+                                                <a href="{% url 'cart:cart_remove' product.id %}?color={{ item.color|urlencode }}" class="text-danger link-offset-2 link-underline-opacity-0 fw-semibold text-sm">
+                                                    🗑️ Remove
+                                                </a>
+                                            </td>
+                                            
+                                            <td class="pe-4 py-3 text-end fw-bold text-dark">
+                                                ₹{{ item.total_price }}
+                                            </td>
+                                        </tr>
+                                    {% endwith %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
+                    <h4 class="fw-bold text-dark mb-4">Order Summary</h4>
+                    <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                        <span class="text-secondary fs-5">Subtotal Amount:</span>
+                        <span class="fw-bold text-dark fs-4">₹{{ cart.get_total_price }}</span>
+                    </div>
+                    
+                    <div class="alert alert-info border-0 rounded-3 mb-4" style="font-size: 0.85rem;">
+                        💡 Clicking below will generate a neat text string list of your items and send it to our store manager on WhatsApp!
+                    </div>
+
+                    <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-success btn-lg w-100 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                        📲 Order via WhatsApp
+                    </a>
+                    
+                    <a href="{% url 'shop:product_list' %}" class="btn btn-outline-dark w-100 mt-3 py-2 fw-semibold rounded-3">
+                        ← Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm rounded-3 text-center p-5 bg-white mt-4">
+            <div class="py-4">
+                <span style="font-size: 4rem;">🛒</span>
+                <h3 class="fw-bold text-dark mt-3">Your shopping cart is completely empty</h3>
+                <p class="text-muted mb-4">Looks like you haven't added any premium items to your collection yet.</p>
+                <a href="{% url 'shop:product_list' %}" class="btn btn-dark btn-md px-4 py-2 fw-bold rounded-3">Explore Collection</a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    table form select, table form input[type="number"] {
+        display: block;
+        width: 100%;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        border-radius: 0.25rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+</style>
+{% endblock %}

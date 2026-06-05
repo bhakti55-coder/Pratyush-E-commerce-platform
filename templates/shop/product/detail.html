@@ -1,0 +1,215 @@
+{% extends "shop/base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row g-5">
+        
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-3 overflow-hidden position-sticky" style="top: 20px;">
+                {% if product.additional_images.all %}
+                    <div id="carouselProductDetail" class="carousel slide bg-light" data-bs-ride="false" data-bs-touch="true">
+                        <div class="carousel-inner" style="min-height: 400px; max-height: 600px;">
+                            {% if product.image %}
+                                <div class="carousel-item active text-center">
+                                    <img src="{{ product.image.url }}" class="img-fluid w-100" alt="{{ product.name }}" style="object-fit: contain; max-height: 600px;">
+                                </div>
+                            {% endif %}
+                            {% for add_img in product.additional_images.all %}
+                                <div class="carousel-item {% if not product.image and forloop.first %}active{% endif %} text-center">
+                                    <img src="{{ add_img.image.url }}" class="img-fluid w-100" alt="{{ add_img.alt_text|default:product.name }}" style="object-fit: contain; max-height: 600px;">
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselProductDetail" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselProductDetail" data-bs-slide="next">
+                            <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+
+                        <div class="carousel-indicators position-relative mt-2 mb-0 pb-3 justify-content-center bg-white">
+                            {% if product.image %}
+                                <button type="button" data-bs-target="#carouselProductDetail" data-bs-slide-to="0" class="active bg-dark" aria-current="true" style="width: 12px; height: 12px; border-radius: 50%;"></button>
+                            {% endif %}
+                            {% for add_img in product.additional_images.all %}
+                                <button type="button" data-bs-target="#carouselProductDetail" data-bs-slide-to="{% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.index0 }}{% endif %}" class="bg-dark" style="width: 12px; height: 12px; border-radius: 50%;"></button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% elif product.image %}
+                    <img src="{{ product.image.url }}" class="img-fluid w-100" alt="{{ product.name }}" style="object-fit: cover;">
+                {% elif product.video %}
+                    <div class="ratio ratio-4x3 bg-black">
+                        <video controls autoplay muted loop playsinline>
+                            <source src="{{ product.video.url }}" type="video/mp4">
+                        </video>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h1 class="display-5 fw-bold text-dark mb-2">{{ product.name }}</h1>
+            <span class="badge bg-secondary px-3 py-2 fs-6 mb-3">{{ product.category.name }}</span>
+            
+            <h3 class="text-success fw-bold mb-4">₹{{ product.price }}</h3>
+            
+            <div class="mb-4">
+                <h5 class="fw-bold text-dark">Product Details</h5>
+                <p class="text-muted lh-base">{{ product.description|linebreaksbr }}</p>
+            </div>
+            
+            <div class="card border-light bg-light rounded-3 p-4 mb-4">
+                <h5 class="fw-bold text-uppercase tracking-wider text-muted mb-3" style="font-size: 0.85rem;">Store Policies</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2 d-flex align-items-center">
+                        <span class="me-2">🛡️</span> <strong>Quality:</strong> <span class="ms-1 text-secondary">100% Premium Quality Guaranteed</span>
+                    </li>
+                    <li class="mb-2 d-flex align-items-center">
+                        <span class="me-2">🔥</span> <strong>Shipping:</strong> <span class="ms-1 text-secondary">FREE SHIPPING ALL OVER INDIA 🔥</span>
+                    </li>
+                    <li class="mb-2 d-flex align-items-start">
+                        <span class="me-2">🔄</span> 
+                        <div><strong>Returns:</strong> <span class="ms-1 text-secondary">Only possible if the product arrived damaged or not what you expected. Customers can request claims directly on WhatsApp.</span></div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <span class="me-2">📹</span> 
+                        <div><strong>Security:</strong> <span class="text-secondary">Package opening video is compulsory for claims.</span></div>
+                    </li>
+                </ul>
+            </div>
+
+            <form action="{% url 'cart:cart_add' product.id %}" method="post" class="mb-2" id="addToCartForm">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label class="fw-bold text-secondary mb-2 d-block">
+                        Select Color Variant: <span class="text-dark fw-bold ms-1" id="selectedColorLabel">Default Base Color</span>
+                    </label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div>
+                            <input type="radio" name="color" id="color_main" value="Default Base Color" checked class="btn-check variant-radio" data-color-name="Default Base Color" data-slide-index="0">
+                            <label class="btn btn-outline-dark p-1 rounded-3" for="color_main" style="border-width: 2px;">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}" alt="Main Option" style="width: 55px; height: 55px; object-fit: cover;" class="rounded-2">
+                                {% else %}
+                                    <div class="d-flex align-items-center justify-content-center bg-secondary text-white rounded-2" style="width: 55px; height: 55px; font-size: 0.7rem;">Base</div>
+                                {% endif %}
+                            </label>
+                        </div>
+
+                        {% for add_img in product.additional_images.all %}
+                            <div>
+                                <input type="radio" name="color" id="color_{{ add_img.id }}" value="{{ add_img.color_name|default:'Alternative Variant' }}" class="btn-check variant-radio" data-color-name="{{ add_img.color_name|default:'Alternative Variant' }}" data-slide-index="{% if product.image %}{{ forloop.counter }}{% else %}{{ forloop.index0 }}{% endif %}">
+                                <label class="btn btn-outline-dark p-1 rounded-3" for="color_{{ add_img.id }}" style="border-width: 2px;">
+                                    <img src="{{ add_img.image.url }}" alt="{{ add_img.color_name }}" style="width: 55px; height: 55px; object-fit: cover;" class="rounded-2">
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-secondary">Delivery Info:</span>
+                    <a href="#" class="text-decoration-underline text-muted small fw-bold" data-bs-toggle="modal" data-bs-target="#shippingDetailsModal">🚚 Required Shipping Details</a>
+                </div>
+
+                <div class="d-flex align-items-center mb-4">
+                    <label id="quantityLabel" for="id_quantity" class="fw-bold text-secondary me-3 mb-0">Select Quantity:</label>
+                    <div style="max-width: 120px; flex-grow: 1;">
+                        {{ cart_product_form.quantity }}
+                    </div>
+                </div>
+                
+                {{ cart_product_form.override }}
+
+                <div class="d-flex gap-2 mb-3">
+                    <button type="submit" class="btn btn-dark btn-lg flex-grow-1 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                        <span class="me-2">🛍️</span> Add to Shopping Cart
+                    </button>
+                    
+                    <a href="{% url 'shop:add_to_wishlist' product.id %}" class="btn btn-outline-secondary btn-lg px-4 rounded-3 d-flex align-items-center justify-content-center" id="wishlistButton" title="Add to Wishlist" style="width: 60px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-1.11 2.175-.708 4.793 1.257 6.755L8 14.4l5.343-4.592c1.965-1.962 2.368-4.58 1.256-6.756-1.114-2.175-4.2-2.578-5.883-.305L8 2.748z"/>
+                        </svg>
+                    </a>
+                </div>
+            </form>
+
+            <div class="w-100">
+                <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-success btn-lg w-100 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center" style="background-color: #25D366; border-color: #25D366;">
+                    <span class="me-2">💬</span> Order via WhatsApp
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="shippingDetailsModal" tabindex="-1" aria-labelledby="shippingDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 border-0 shadow">
+            <div class="modal-header bg-dark text-white rounded-top-3">
+                <h5 class="modal-title fw-bold" id="shippingDetailsModalLabel">🚚 SHIPPING & DELIVERY DETAILS</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-shadow="none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <p class="text-muted small mb-3">Please keep the following format ready for a smooth delivery process:</p>
+                
+                <div class="bg-white p-3 rounded-3 border shadow-sm">
+                    <ul class="list-unstyled mb-0 lh-lg text-dark">
+                        <li><strong>Customer Name:</strong> </li>
+                        <li><strong>House No / Flat:</strong> </li>
+                        <li><strong>Address / Street:</strong> </li>
+                        <li><strong>Near By Landmark:</strong> </li>
+                        <li><strong>City Name:</strong> </li>
+                        <li><strong>District:</strong> </li>
+                        <li><strong>State:</strong> </li>
+                        <li><strong>Pin Code:</strong> </li>
+                        <li><strong>Phone No:</strong> </li>
+                        <li class="border-top pt-2 mt-2 text-primary"><strong>Size & Color:</strong> </li>
+                    </ul>
+                </div>
+
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary w-100 rounded-3 fw-bold py-2" data-bs-dismiss="modal">Got It</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const qtyField = document.querySelector('#addToCartForm select');
+        if (qtyField) {
+            qtyField.classList.add('form-select', 'form-select-md', 'fw-semibold', 'text-center');
+        }
+
+        const radios = document.querySelectorAll('.variant-radio');
+        const labelText = document.querySelector('#selectedColorLabel');
+        const carouselElement = document.querySelector('#carouselProductDetail');
+
+        if (carouselElement && bootstrap.Carousel) {
+            const productCarousel = bootstrap.Carousel.getInstance(carouselElement) || new bootstrap.Carousel(carouselElement);
+
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        const colorName = this.getAttribute('data-color-name');
+                        labelText.textContent = colorName;
+
+                        const slideIndex = parseInt(this.getAttribute('data-slide-index'), 10);
+                        productCarousel.to(slideIndex);
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

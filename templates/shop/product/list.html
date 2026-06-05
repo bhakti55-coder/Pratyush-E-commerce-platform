@@ -1,0 +1,135 @@
+{% extends "shop/base.html" %}
+
+{% block title %}
+    {% if category %}{{ category.name }}{% else %}Our Collection{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row mt-4">
+    <div class="col-md-3 mb-4">
+        <div class="list-group shadow-sm">
+            <a href="{% url 'shop:product_list' %}" class="list-group-item list-group-item-action {% if not category %}active bg-dark border-dark{% endif %}">
+                All Categories
+            </a>
+            {% for c in categories %}
+                <a href="{% url 'shop:product_list_by_category' c.slug %}" class="list-group-item list-group-item-action {% if category.id == c.id %}active bg-dark border-dark{% endif %}">
+                    {{ c.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        {% if category %}
+            <h2 class="mb-4 fw-bold text-uppercase tracking-wide text-dark">{{ category.name }}</h2>
+            <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+                {% for product in products %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
+                            
+                            {% if product.additional_images.all %}
+                                <div id="carouselProductCategory{{ product.id }}" class="carousel slide" data-bs-ride="false" data-bs-touch="true">
+                                    <div class="carousel-inner" style="height: 280px;">
+                                        {% if product.image %}
+                                            <div class="carousel-item active h-100">
+                                                <img src="{{ product.image.url }}" class="d-block w-100 h-100" alt="{{ product.name }}" style="object-fit: cover;">
+                                            </div>
+                                        {% endif %}
+                                        {% for add_img in product.additional_images.all %}
+                                            <div class="carousel-item {% if not product.image and forloop.first %}active{% endif %} h-100">
+                                                <img src="{{ add_img.image.url }}" class="d-block w-100 h-100" alt="{{ add_img.alt_text|default:product.name }}" style="object-fit: cover;">
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselProductCategory{{ product.id }}" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carouselProductCategory{{ product.id }}" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                </div>
+                            {% elif product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 280px; object-fit: cover;">
+                            {% elif product.video %}
+                                <div class="position-relative" style="height: 280px; background-color: #000;">
+                                    <video class="w-100 h-100" style="object-fit: cover;" autoplay muted loop playsinline>
+                                        <source src="{{ product.video.url }}" type="video/mp4">
+                                    </video>
+                                    <span class="badge bg-dark position-absolute top-0 start-0 m-2">🎬 Video Preview</span>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body d-flex flex-column p-3">
+                                <h5 class="card-title fw-bold text-dark mb-1">{{ product.name }}</h5>
+                                <p class="text-success fw-bold mb-3">₹{{ product.price }}</p>
+                                <a href="{% url 'shop:product_detail' product.id product.slug %}" class="btn btn-outline-dark mt-auto w-100 py-2 fw-bold">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <p class="text-muted bg-light p-4 rounded text-center">No products found in this category yet.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            {% for cat in categories %}
+                <h2 class="mb-4 fw-bold text-uppercase tracking-wide text-dark">{{ cat.name }}</h2>
+                <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+                    {% for product in products %}
+                        {% if product.category.id == cat.id %}
+                            <div class="col">
+                                <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
+                                    
+                                    {% if product.additional_images.all %}
+                                        <div id="carouselProductHome{{ product.id }}" class="carousel slide" data-bs-ride="false" data-bs-touch="true">
+                                            <div class="carousel-inner" style="height: 280px;">
+                                                {% if product.image %}
+                                                    <div class="carousel-item active h-100">
+                                                        <img src="{{ product.image.url }}" class="d-block w-100 h-100" alt="{{ product.name }}" style="object-fit: cover;">
+                                                    </div>
+                                                {% endif %}
+                                                {% for add_img in product.additional_images.all %}
+                                                    <div class="carousel-item {% if not product.image and forloop.first %}active{% endif %} h-100">
+                                                        <img src="{{ add_img.image.url }}" class="d-block w-100 h-100" alt="{{ add_img.alt_text|default:product.name }}" style="object-fit: cover;">
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselProductHome{{ product.id }}" data-bs-slide="prev">
+                                                <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Previous</span>
+                                            </button>
+                                            <button class="carousel-control-next" type="button" data-bs-target="#carouselProductHome{{ product.id }}" data-bs-slide="next">
+                                                <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                                <span class="visually-hidden">Next</span>
+                                            </button>
+                                        </div>
+                                    {% elif product.image %}
+                                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 280px; object-fit: cover;">
+                                    {% elif product.video %}
+                                        <div class="position-relative" style="height: 280px; background-color: #000;">
+                                            <video class="w-100 h-100" style="object-fit: cover;" autoplay muted loop playsinline>
+                                                <source src="{{ product.video.url }}" type="video/mp4">
+                                            </video>
+                                            <span class="badge bg-dark position-absolute top-0 start-0 m-2">🎬 Video Preview</span>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="card-body d-flex flex-column p-3">
+                                        <h5 class="card-title fw-bold text-dark mb-1">{{ product.name }}</h5>
+                                        <p class="text-success fw-bold mb-3">₹{{ product.price }}</p>
+                                        <a href="{% url 'shop:product_detail' product.id product.slug %}" class="btn btn-outline-dark mt-auto w-100 py-2 fw-bold">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
