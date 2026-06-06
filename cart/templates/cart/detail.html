@@ -1,9 +1,10 @@
 {% extends "shop/base.html" %}
+{% load static %}
 
 {% block title %}Your Shopping Cart{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
     <h1 class="mb-4 fw-bold text-dark">Shopping Cart Summary</h1>
     
     {% if cart %}
@@ -28,6 +29,8 @@
                                                 <div class="d-flex align-items-center">
                                                     {% if product.image %}
                                                         <img src="{{ product.image.url }}" alt="{{ product.name }}" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                    {% else %}
+                                                        <img src="{% static 'images/no_image.png' %}" class="rounded me-3 shadow-sm" style="width: 60px; height: 60px; object-fit: cover; background-color: #f8f9fa;">
                                                     {% endif %}
                                                     <div>
                                                         <h6 class="fw-bold text-dark mb-0">{{ product.name }}</h6>
@@ -43,9 +46,9 @@
                                                     <div style="max-width: 80px;">
                                                         {{ item.update_quantity_form.quantity }}
                                                     </div>
-                                                    {{ item.update_quantity_form.override }}
                                                     
-                                                    <input type="hidden" name="color" value="{{ item.color|default:'Default Base Color' }}">
+                                                    {{ item.update_quantity_form.override }}
+                                                    {{ item.update_quantity_form.color }}
                                                     
                                                     <button type="submit" class="btn btn-sm btn-outline-secondary ms-2 py-1 px-2" style="font-size: 0.75rem;">Update</button>
                                                 </form>
@@ -77,7 +80,7 @@
                         <span class="fw-bold text-dark fs-4">₹{{ cart.get_total_price }}</span>
                     </div>
                     
-                    <div class="alert alert-info border-0 rounded-3 mb-4" style="font-size: 0.85rem;">
+                    <div class="alert alert-info border-0 rounded-3 mb-4 shadow-sm" style="font-size: 0.85rem;">
                         💡 Clicking below will generate a neat text string list of your items and send it to our store manager on WhatsApp!
                     </div>
 
@@ -85,41 +88,4 @@
                         📲 Order via WhatsApp
                     </a>
                     
-                    <a href="{% url 'shop:product_list' %}" class="btn btn-outline-dark w-100 mt-3 py-2 fw-semibold rounded-3">
-                        ← Continue Shopping
-                    </a>
-                </div>
-            </div>
-        </div>
-    {% else %}
-        <div class="card border-0 shadow-sm rounded-3 text-center p-5 bg-white mt-4">
-            <div class="py-4">
-                <span style="font-size: 4rem;">🛒</span>
-                <h3 class="fw-bold text-dark mt-3">Your shopping cart is completely empty</h3>
-                <p class="text-muted mb-4">Looks like you haven't added any premium items to your collection yet.</p>
-                <a href="{% url 'shop:product_list' %}" class="btn btn-dark btn-md px-4 py-2 fw-bold rounded-3">Explore Collection</a>
-            </div>
-        </div>
-    {% endif %}
-</div>
-
-<style>
-    table form select, table form input[type="number"] {
-        display: block;
-        width: 100%;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-        font-weight: 400;
-        line-height: 1.5;
-        color: #212529;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid #ced4da;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        border-radius: 0.25rem;
-        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    }
-</style>
-{% endblock %}
+                    <a href="{% url 'shop:product_list' %}" class="btn btn-outline-dark w-1

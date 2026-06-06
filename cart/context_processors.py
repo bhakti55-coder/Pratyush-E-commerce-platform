@@ -1,5 +1,7 @@
 from .cart import Cart
 
 def cart(request):
-    """Exposes the active cart instance globally across all template contexts."""
+    """
+    Instantiates the cart and makes it available to all templates globally.
+    """
     return {'cart': Cart(request)}

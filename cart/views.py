@@ -49,17 +49,41 @@ def cart_detail(request):
             'color': item.get('color', 'Default Base Color')  # Keeps color locked during updates
         })
         
+    # --- AUTOMATIC PROFILE PRE-FILLING LOGIC ---
+    cust_name = ""
+    house = ""
+    street = ""
+    landmark = ""
+    city = ""
+    district = ""
+    state = ""
+    pin = ""
+    phone = ""
+
+    # If the user is logged in, extract their saved profile data
+    if request.user.is_authenticated:
+        try:
+            profile = request.user.profile
+            cust_name = f"{request.user.first_name} {request.user.last_name}".strip() or request.user.username
+            house = profile.house_no_flat or ""
+            street = profile.address_street or ""
+            landmark = profile.landmark or ""
+            city = profile.city or ""
+            district = profile.district or ""
+            state = profile.state or ""
+            pin = profile.pincode or ""
+            phone = profile.phone_number or ""
+        except:
+            pass # Fails silently if no profile exists; variables remain blank
+            
     # 1. Base Welcome greeting line
     msg = "Hello! I would like to order from your store:\n\n"
     
     # 2. Compile each cart product along with its direct absolute link on your store
     for item in cart:
         product = item['product']
-        # Build the live domain routing link
         product_url = request.build_absolute_uri(product.get_absolute_url())
         
-        # 🛡️ VERIFIED FIX: Replaced unicode bullet points with web-safe standard text dashes/emojis
-        # This completely resolves the annoying '?' encoding glitch on WhatsApp Web and Mobile!
         msg += f"📦 *{product.name}*\n"
         msg += f"   - Color: {item.get('color', 'Default Base Color')}\n"
         msg += f"   - Quantity: {item['quantity']}\n"
@@ -69,23 +93,22 @@ def cart_detail(request):
     # 3. Add the overall subtotal calculation
     msg += f"*Total Amount:* ₹{cart.get_total_price()}\n\n"
     
-    # 4. Inject the empty shipping credentials template for the user to complete
-    # Uses standard text dashes which never fail to compile in URL routing links
+    # 4. Inject the shipping credentials template (pre-filled if logged in!)
     msg += "✍️ *SHIPPING & DELIVERY DETAILS:*\n"
-    msg += " - Customer Name: \n"
-    msg += " - House No / Flat: \n"
-    msg += " - Address / Street: \n"
-    msg += " - Near By Landmark: \n"
-    msg += " - City Name: \n"
-    msg += " - District: \n"
-    msg += " - State: \n"
-    msg += " - Pin Code: \n"
-    msg += " - Phone No: \n"
+    msg += f" - Customer Name: {cust_name}\n"
+    msg += f" - House No / Flat: {house}\n"
+    msg += f" - Address / Street: {street}\n"
+    msg += f" - Near By Landmark: {landmark}\n"
+    msg += f" - City Name: {city}\n"
+    msg += f" - District: {district}\n"
+    msg += f" - State: {state}\n"
+    msg += f" - Pin Code: {pin}\n"
+    msg += f" - Phone No: {phone}\n"
 
     # Safely convert the string spaces and symbols into valid URL format
     encoded_msg = quote(msg)
     
-    # Official WhatsApp Send Routing Link (opens user's personal chat client directly)
+    # Official WhatsApp Send Routing Link
     whatsapp_url = f"https://wa.me/918983341944?text={encoded_msg}"
     
     return render(request, 'cart/detail.html', {

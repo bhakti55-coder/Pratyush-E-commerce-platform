@@ -1,10 +1,11 @@
 from django.urls import path
 from . import views
 
+# This is required by Django when using namespaces!
 app_name = 'shop'
 
 urlpatterns = [
-    # 1. Main views
+    # 1. Main Home/Shop View
     path('', views.product_list, name='product_list'),
     
     # 2. Account Paths (Must come BEFORE dynamic slugs)
@@ -18,7 +19,7 @@ urlpatterns = [
     path('wishlist/add/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     
-    # 4. Dynamic paths (Must come AFTER static paths)
+    # 4. Dynamic Category & Product paths (Must come AFTER static paths)
     path('<slug:category_slug>/', views.product_list, name='product_list_by_category'), 
     path('<int:id>/<slug:slug>/', views.product_detail, name='product_detail'),
 ]

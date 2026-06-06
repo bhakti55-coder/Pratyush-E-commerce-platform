@@ -64,3 +64,53 @@ Follow these precise operational terminal sequences to initiate the development 
 **1. Activate the isolated workspace:**
 ```bash
 venv\Scripts\activate
+
+# Pratyush Store — Week 2 Milestone
+
+## 🛍️ Enhanced Product Catalog & Visual Variations
+
+During Week 2, the core product engine was expanded to support advanced cataloging requirements. Instead of simple standalone products, the platform now handles rich text descriptions, flexible multi-image galleries, and distinct variant labels to match specific inventory selections.
+
+---
+
+### ✨ Key Features Implemented
+
+* **Multi-Image Product Galleries:** Added the `ProductImage` model linked via a Foreign Key to allow individual products to showcase an unlimited number of secondary angles and promotional graphics.
+* **Color & Variant Customization:** Introduced a specialized `color_name` field within the gallery schema to map explicit thumbnail previews to distinct inventory options (e.g., Royal Blue, Ruby Red).
+* **Global E-Commerce Policies:** hardcoded pre-filled vendor standards directly into the product layer, keeping data uniform across the platform:
+  * *Quality Policy:* 100% Premium Quality Guaranteed
+  * *Shipping Policy:* 🔥 FREE SHIPPING ALL OVER INDIA 🔥
+  * *Return Policy:* Strict No-Return Policy applies.
+  * *Security Measure:* Compulsory package opening video for damage validation.
+* **Dynamic Contact Delegation:** Assigned individual contact attributes (`booking_contact_name` and `booking_contact_number`) to each product item to scale multi-vendor management natively.
+
+---
+
+### 🛠️ Database Schema Upgrades
+The `shop` app models were updated and successfully applied using Django’s migration engine:
+
+```bash
+python manage.py makemigrations shop
+python manage.py migrate
+
+### 📂 Option B: `README.md` Content for Week 3
+
+```markdown
+# Pratyush Store — Week 3 Milestone
+
+## 🔐 User Authentication & Intelligent Profile Dashboards
+
+Week 3 focused on user security, state persistence, and automation. This update establishes a fully unified system connecting anonymous store guests, registered buyer profiles, and personalized WhatsApp automated checkouts.
+
+---
+
+### ✨ Key Features Implemented
+
+* **Secure Authentication Engine:** Created dedicated user onboarding sequences covering customer Sign-Up, Login restrictions, and instantaneous Navbar state updates based on session validity.
+* **Shipping Profile Dashboard:** Designed the comprehensive `Profile` model tracking localized shipping criteria including House No/Flat, Landmarks, District, State, and Pin Code metrics.
+* **Fault-Tolerant Signal Automation:** Integrated automatic lifecycle hooks utilizing Django `post_save` receivers. 
+  * *Bug Shielding:* Implemented advanced `try/except` logic mapping against `Profile.DoesNotExist` exceptions. This ensures legacy administrative accounts without preset profiles automatically generate profile configurations mid-session without triggering runtime crashes.
+* **Pre-Filled Checkout Integration:** Wired the authenticated user's data structures directly into the store’s interactive hooks. Clicking a product link generates an explicit WhatsApp API layout pre-filling saved profile details directly inside the text payload.
+
+---
+
