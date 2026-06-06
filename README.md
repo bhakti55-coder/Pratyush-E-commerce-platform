@@ -114,3 +114,26 @@ Week 3 focused on user security, state persistence, and automation. This update 
 
 ---
 
+# Pratyush Store - E-Commerce Platform
+
+A feature-rich, session-based e-commerce storefront built with Django.
+
+## Project Status: Week 4
+We have successfully implemented the **Shopping Cart Module**. Users can now add products (including specific color variants) to a persistent session, update quantities, and generate pre-filled WhatsApp checkout messages that include shipping details pulled from their user profiles.
+
+## Key Features Implemented (Week 4)
+- **Session-Based Cart:** Persistent shopping sessions without requiring database hits for every view.
+- **Dynamic Product Variants:** Support for custom product attributes (e.g., Color) using a composite key strategy.
+- **WhatsApp Checkout:** Automatic conversion of cart data into a formatted, ready-to-send WhatsApp order string.
+- **Auto-Fill Profiles:** Integration between user profiles and checkout, pre-filling address and contact details.
+
+## Technologies
+- **Backend:** Django 5.x, Python 3.x
+- **Frontend:** Bootstrap 5, Django Template Engine
+- **Version Control:** Git
+
+## Getting Started
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repository-url>
+   cd pratyush-store
