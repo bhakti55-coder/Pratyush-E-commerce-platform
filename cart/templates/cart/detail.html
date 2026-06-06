@@ -39,30 +39,22 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            
                                             <td class="py-3">
                                                 <form action="{% url 'cart:cart_add' product.id %}" method="post" class="d-flex align-items-center">
                                                     {% csrf_token %}
-                                                    <div style="max-width: 80px;">
-                                                        {{ item.update_quantity_form.quantity }}
-                                                    </div>
-                                                    
+                                                    <div style="max-width: 80px;">{{ item.update_quantity_form.quantity }}</div>
                                                     {{ item.update_quantity_form.override }}
-                                                    {{ item.update_quantity_form.color }}
+                                                    <input type="hidden" name="color" value="{{ item.color }}">
                                                     
                                                     <button type="submit" class="btn btn-sm btn-outline-secondary ms-2 py-1 px-2" style="font-size: 0.75rem;">Update</button>
                                                 </form>
                                             </td>
-                                            
                                             <td class="py-3">
                                                 <a href="{% url 'cart:cart_remove' product.id %}?color={{ item.color|urlencode }}" class="text-danger link-offset-2 link-underline-opacity-0 fw-semibold text-sm">
                                                     🗑️ Remove
                                                 </a>
                                             </td>
-                                            
-                                            <td class="pe-4 py-3 text-end fw-bold text-dark">
-                                                ₹{{ item.total_price }}
-                                            </td>
+                                            <td class="pe-4 py-3 text-end fw-bold text-dark">₹{{ item.total_price }}</td>
                                         </tr>
                                     {% endwith %}
                                 {% endfor %}
@@ -76,16 +68,25 @@
                 <div class="card border-0 shadow-sm rounded-3 p-4 bg-white">
                     <h4 class="fw-bold text-dark mb-4">Order Summary</h4>
                     <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
-                        <span class="text-secondary fs-5">Subtotal Amount:</span>
+                        <span class="text-secondary fs-5">Subtotal:</span>
                         <span class="fw-bold text-dark fs-4">₹{{ cart.get_total_price }}</span>
                     </div>
                     
-                    <div class="alert alert-info border-0 rounded-3 mb-4 shadow-sm" style="font-size: 0.85rem;">
-                        💡 Clicking below will generate a neat text string list of your items and send it to our store manager on WhatsApp!
-                    </div>
-
-                    <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-success btn-lg w-100 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                    <a href="{{ whatsapp_url }}" target="_blank" class="btn btn-success btn-lg w-100 py-3 fw-bold rounded-3 shadow-sm d-flex align-items-center justify-content-center mb-3">
                         📲 Order via WhatsApp
                     </a>
                     
-                    <a href="{% url 'shop:product_list' %}" class="btn btn-outline-dark w-1
+                    <a href="{% url 'shop:product_list' %}" class="btn btn-outline-dark w-100 py-2 rounded-3">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <h3>Your cart is empty.</h3>
+            <a href="{% url 'shop:product_list' %}" class="btn btn-primary mt-3">Browse Products</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
